@@ -34,15 +34,17 @@
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Author:</strong>
-                <input type="text" name="author" class="form-control" placeholder="Name">
-            </div>
+            <select name="author_id" class="form-control">
+                <option value="">Select Author</option>
+                @foreach ($authors as $author)
+                    <option value="{{ $author->id }}">{{ $author->name }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Genre:</strong>
-                <input type="text" name="genre" class="form-control" placeholder="Name">
+                <input type="text" name="type" class="form-control" placeholder="Name">
             </div>
         </div>
         
