@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class BookController extends Controller
 {
@@ -12,11 +13,10 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = Book::latest()->paginate(5);
-        
-        return view('books.index',compact('books'))
-                    ->with('i', (request()->input('page', 1) - 1) * 5);
-       
+        $books = Book::all();
+
+        return view('books.index', compact('books'));
+
     }
 
     /**
@@ -24,7 +24,7 @@ class BookController extends Controller
      */
     public function create()
     {
-  
+
         return view('books.create');
     }
 
@@ -33,19 +33,19 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $request->validate([
-            'title'=>'required|min:10|max:255',
-            'author'=>'required|string',
-            'genre'=>'required|string',
-    
+            'title' => 'required|min:10|max:255',
+            'author' => 'required|string',
+            'genre' => 'required|string',
+
         ]);
-        
-        Book::create($request->all());
-         
-        return redirect()->route('books.index')
-                        ->with('success','Book created successfully.');
-;
+
+        $book = Book::create($request->all());
+        if ($request) {
+            return response()->json(['status' => 'success', 'message' => 'Success! book is created', 'book' => $book]);
+        }
+        return response()->json(['status' => 'failed', 'message' => 'Failed! Unable to create book']);
     }
 
     /**
@@ -53,7 +53,7 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        return view('books.show',compact('book'));
+        return view('books.show', compact('book'));
     }
 
     /**
@@ -61,7 +61,7 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        return view('books.edit', compact('book'));
+        // return view('books.edit', compact('book'));
     }
 
     /**
@@ -69,29 +69,32 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        
+
         $request->validate([
-            'title'=>'required|min:10|max:255',
-            'author'=>'required|string',
-            'genre'=>'required|string',
-    
+            'title' => 'required|min:10|max:255',
+            'author' => 'required|string',
+            'genre' => 'required|string',
+
         ]);
-        
-        $book->update($request->all());
-        
-        return redirect()->route('books.index')
-                        ->with('success','Book updated successfully');
+
+        if ($book) {
+            $book->save();
+            return response()->json(['status' => 'success', 'message' => 'Success! book is created', 'book' => $book]);
+        }
+        return response()->json(['status' => 'failed', 'message' => 'Failed! Unable to create book']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Book $book)
+    public function destroy(Book $book): JsonResponse
     {
-      
-        $book->delete();
-         
-        return redirect()->route('books.index')
-                        ->with('success','Book deleted successfully');
+        if ($book) {
+            $book->delete();
+            return response()->json(['status' => 'success', 'message' => 'Success! book is deleted', 'todo' => $book]);
+        }
+        return response()->json(['status' => 'success', 'message' => 'Failed! Unable to delete book']);
     }
+
+
 }
