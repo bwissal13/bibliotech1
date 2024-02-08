@@ -49,7 +49,7 @@ class BookController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource.k
      */
     public function show(Book $book)
     {
@@ -61,7 +61,7 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        // return view('books.edit', compact('book'));
+        return response()->json(['status' => 'success', 'message' => 'Success! book is created', 'book' => $book]);
     }
 
     /**
@@ -78,10 +78,10 @@ class BookController extends Controller
         ]);
 
         if ($book) {
-            $book->save();
-            return response()->json(['status' => 'success', 'message' => 'Success! book is created', 'book' => $book]);
+            $book->update($request->all());
+            return response()->json(['status' => 'success', 'message' => 'Success! book is updated', 'book' => $book]);
         }
-        return response()->json(['status' => 'failed', 'message' => 'Failed! Unable to create book']);
+        return response()->json(['status' => 'failed', 'message' => 'Failed! Unable to updated book']);
     }
 
     /**
@@ -91,7 +91,7 @@ class BookController extends Controller
     {
         if ($book) {
             $book->delete();
-            return response()->json(['status' => 'success', 'message' => 'Success! book is deleted', 'todo' => $book]);
+            return response()->json(['status' => 'success', 'message' => 'Success! book is deleted', 'book' => $book]);
         }
         return response()->json(['status' => 'success', 'message' => 'Failed! Unable to delete book']);
     }

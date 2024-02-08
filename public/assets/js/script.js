@@ -1,10 +1,3 @@
-// var modal = new bootstrap.Modal(document.getElementById("createModal"));
-// document.getElementById("createBook").addEventListener("click", (e) => {
-//     modal.show();
-// });
-// document.querySelector("#close").addEventListener("click", () => {
-//     modal.hide();
-// });
 
 $.ajaxSetup({
     headers: {
@@ -12,10 +5,14 @@ $.ajaxSetup({
     },
 });
 
+
+
 $(document).ready(function () {
     $("#createBook").click(function () {
         $("#createModal").modal("toggle");
     });
+    var status = true;
+    var book_Id ;
 
     $("#bookForm").validate({
         rules: {
@@ -26,10 +23,12 @@ $(document).ready(function () {
             },
             author: {
                 required: true,
+                minlength: 10,
                 maxlength: 255,
             },
             genre: {
                 required: true,
+                minlength: 10,
                 maxlength: 255,
             },
         },
@@ -53,9 +52,20 @@ $(document).ready(function () {
         submitHandler: function (form) {
             const formData = $(form).serializeArray();
 
+            if(status){
+                var url= `books`;
+                var methode = "POST"
+            }else {
+                var url= `books/${book_Id}`;
+                var methode = "PUT"
+            }
+
+
             $.ajax({
-                url: "books",
-                type: "POST",
+
+
+                url: url,
+                type: methode,
                 data: formData,
                 beforeSend: function () {
                     console.log("Loading...");
@@ -65,6 +75,7 @@ $(document).ready(function () {
 
                     $("#bookForm")[0].reset();
                     $("#createModal").modal("toggle");
+
 
                     if (response.status === "success") {
                         Swal.fire({
@@ -111,29 +122,31 @@ $(document).ready(function () {
     // Edit book
     $("#bookTable").on("click", ".editButton", function () {
         const bookId = $(this).data("id");
+        book_Id= $(this).data("id");
+        status = false;
         bookId && fetchBook(bookId);
     });
 
     function fetchBook(bookId) {
         if (bookId) {
             $.ajax({
-                url: `/books/${bookId}`,
+                url: `/books/${bookId}/edit`,
                 type: "GET",
                 success: function (response) {
                     console.log(response);
+
                     if (response.status === "success") {
                         const book = response.book;
 
-                        $("#bookTable #title").val(book.title);
-                        $("#bookTable #author").val(book.author);
-                        $("#bookTable #genre").val(book.genre);
+                        $("#bookForm #title").val(book.title);
+                        $("#bookForm #author").val(book.author);
+                        $("#bookForm #genre").val(book.genre);
 
                         $(" input");
                         $("#bookForm button[type=submit]");
-                        // $("#modal-title").text("Update Todo");
-                        $("#bookForm").attr("action", `${baseUrl}/book/${book.id}`);
                         $("#bookForm").append(`<input type="hidden" id="hidden-todo-id" value="${book.id}"/>`);
-                        $("#bookForm").modal("toggle");
+                        $("#createModal").modal("toggle");
+                        
                     }
                 },
                 error: function (error) {
@@ -141,7 +154,12 @@ $(document).ready(function () {
                 },
             });
         }
+
     }
+
+
+
+
 
 
 
